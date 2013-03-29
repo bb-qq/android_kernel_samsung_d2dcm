@@ -706,7 +706,7 @@ static int mmc_blk_ioctl(struct block_device *bdev, fmode_t mode,
 				__func__, cmd);
 
 			if (cmd == ACMD43) {
-				printk(KERN_DEBUG"storing acmd43 arg[%d] = %ul\n"
+				printk(KERN_DEBUG"storing acmd43 arg[%d] = %lu\n"
 					, i, req->arg);
 				temp_arg[i] = req->arg;
 				i++;
@@ -723,7 +723,7 @@ static int mmc_blk_ioctl(struct block_device *bdev, fmode_t mode,
 				printk(KERN_DEBUG"ACMD45.. I'll call ACMD43 and ACMD44 first\n");
 
 				for (i = 0; i < 16; i++) {
-					printk(KERN_DEBUG"calling ACMD43 with arg[%d] = %ul\n",
+					printk(KERN_DEBUG"calling ACMD43 with arg[%d] = %lu\n",
 						i, temp_arg[i]);
 					if (stub_sendcmd(card,
 						ACMD43, temp_arg[i],
@@ -737,7 +737,7 @@ static int mmc_blk_ioctl(struct block_device *bdev, fmode_t mode,
 
 
 				printk(KERN_DEBUG"calling ACMD44\n");
-				if (stub_sendcmd(card, ACMD44, NULL,
+				if (stub_sendcmd(card, ACMD44, 0,
 					8, NULL) < 0) {
 
 					printk(KERN_DEBUG"error in ACMD44 %d\n",

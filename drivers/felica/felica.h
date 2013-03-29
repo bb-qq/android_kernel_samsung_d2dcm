@@ -62,18 +62,6 @@
 #define GPIO_VALUE_HIGH			1
 #define GPIO_VALUE_LOW			0
 
-/* function prototype */
-static void felica_initialize_pin(void);
-static void felica_finalize_pin(void);
-static void felica_register_device(void);
-static void felica_deregister_device(void);
-static int __init felica_init(void);
-static void __exit felica_exit(void);
-
-
-
-
-
 /******************************************************************************
  * /dev/felica
  ******************************************************************************/
@@ -120,28 +108,6 @@ static void __exit felica_exit(void);
 #define FELICA_SCM_BLOW_SW_FUSE_ID     0x01
 #define FELICA_SCM_IS_SW_FUSE_BLOWN_ID 0x02
 
-/* function prototype */
-static void felica_uart_init(void);
-static void felica_uart_exit(void);
-static int felica_uart_open(struct inode *inode, struct file *file);
-static int felica_uart_close(struct inode *inode, struct file *file);
-static ssize_t felica_uart_read(struct file *file, char __user *buf,\
-			size_t len, loff_t *ppos);
-static ssize_t felica_uart_write(struct file *file, const char __user *data,\
-			size_t len, loff_t *ppos);
-static int felica_uart_sync(struct file *file, int datasync);
-static long felica_uart_ioctl(struct file *file, unsigned int cmd,\
-			unsigned long arg);
-static void felica_nl_init(void);
-static void felica_nl_exit(void);
-static void felica_nl_send_msg(int len);
-static void felica_nl_recv_msg(struct sk_buff *skb);
-static void felica_nl_wait_ret_msg(void);
-static void felica_set_felica_info(void);
-static uint8_t felica_get_tamper_fuse_cmd(void);
-
-
-
 
 /******************************************************************************
  * /dev/felica_pon
@@ -154,19 +120,6 @@ static uint8_t felica_get_tamper_fuse_cmd(void);
 #define FELICA_PON_WIRELESS				0
 #define FELICA_PON_WIRED				1
 
-/* function prototype */
-static void felica_pon_init(void);
-static void felica_pon_exit(void);
-static int felica_pon_open(struct inode *inode, struct file *file);
-static int felica_pon_close(struct inode *inode, struct file *file);
-static ssize_t felica_pon_read(struct file *file, char __user *buf,\
-			size_t len, loff_t *ppos);
-static ssize_t felica_pon_write(struct file *file, const char __user *data, \
-			size_t len, loff_t *ppos);
-
-
-
-
 
 /******************************************************************************
  * felica_i2c_driver
@@ -175,12 +128,6 @@ static ssize_t felica_pon_write(struct file *file, const char __user *data, \
 /* constant definition */
 #define FELICA_I2C_NAME					"felica_i2c"
 
-/* function prototype */
-static void felica_i2c_init(void);
-static void felica_i2c_exit(void);
-static int felica_i2c_probe(struct i2c_client *client,\
-				const struct i2c_device_id *devid);
-static int felica_i2c_remove(struct i2c_client *client);
 
 /******************************************************************************
  * /dev/felica_cen
@@ -195,19 +142,6 @@ static int felica_i2c_remove(struct i2c_client *client);
 #define FELICA_CEN_SET_LOCK				0x80
 #define FELICA_CEN_SET_UNLOCK				0x81
 
-/* function prototype */
-static void felica_cen_init(void);
-static void felica_cen_exit(void);
-static int felica_cen_open(struct inode *inode, struct file *file);
-static int felica_cen_close(struct inode *inode, struct file *file);
-static ssize_t felica_cen_read(struct file *file, char __user *buf,\
-				size_t len, loff_t *ppos);
-static ssize_t felica_cen_write(struct file *file, const char __user *data,\
-				size_t len, loff_t *ppos);
-
-
-
-
 
 /******************************************************************************
  * /dev/felica_rfs
@@ -220,17 +154,6 @@ static ssize_t felica_cen_write(struct file *file, const char __user *data,\
 #define FELICA_RFS_STANDBY				0
 #define FELICA_RFS_DETECTED				1
 
-/* function prototype */
-static void felica_rfs_init(void);
-static void felica_rfs_exit(void);
-static int felica_rfs_open(struct inode *inode, struct file *file);
-static int felica_rfs_close(struct inode *inode, struct file *file);
-static ssize_t felica_rfs_read(struct file *file, char __user *buf, \
-			size_t len, loff_t *ppos);
-
-
-
-
 
 /******************************************************************************
  * /dev/felica_rws
@@ -242,19 +165,6 @@ static ssize_t felica_rfs_read(struct file *file, char __user *buf, \
 #define FELICA_RW_STATUS_INIT			0
 #define FELICA_RW_STATUS_ENABLE			0
 #define FELICA_RW_STATUS_DISABLE		1
-
-/* function prototype */
-static void felica_rws_init(void);
-static void felica_rws_exit(void);
-static int felica_rws_open(struct inode *inode, struct file *file);
-static int felica_rws_close(struct inode *inode, struct file *file);
-static ssize_t felica_rws_read(struct file *file, char __user *buf,\
-			size_t len, loff_t *ppos);
-static ssize_t felica_rws_write(struct file *file, const char __user *data, \
-			size_t len, loff_t *ppos);
-
-
-
 
 
 /******************************************************************************
@@ -269,17 +179,6 @@ static ssize_t felica_rws_write(struct file *file, const char __user *data, \
 #define FELICA_INT_LOW					0
 #define FELICA_INT_HIGH					1
 
-/* function prototype */
-static irqreturn_t felica_int_irq_handler(int irq, void *dev_id);
-static void felica_int_irq_work(struct work_struct *work);
-static void felica_int_poll_init(void);
-static void felica_int_poll_exit(void);
-static int felica_int_poll_open(struct inode *inode, struct file *file);
-static int felica_int_poll_close(struct inode *inode, struct file *file);
-static ssize_t felica_int_poll_read(struct file *file, \
-			char __user *buf, size_t len, loff_t *ppos);
-static unsigned int felica_int_poll_poll(struct file *file, poll_table *wait);
-
 
 #ifdef CONFIG_FELICA_DIAG
 /******************************************************************************
@@ -292,13 +191,6 @@ static unsigned int felica_int_poll_poll(struct file *file, poll_table *wait);
 #define FELICA_MAGIC					0xF8
 #define SET_FELICA_UID_DIAG	_IOW(FELICA_MAGIC, 4, void *)
 
-/* function prototype */
-static void felica_uid_init(void);
-static void felica_uid_exit(void);
-static int felica_uid_open(struct inode *inode, struct file *file);
-static int felica_uid_close(struct inode *inode, struct file *file);
-static long felica_uid_ioctl(struct file *file, unsigned int cmd, \
-						unsigned long arg);
 #endif
 /******************************************************************************
  * /dev/felica_ant
@@ -307,19 +199,6 @@ static long felica_uid_ioctl(struct file *file, unsigned int cmd, \
 /* constant definition */
 #define FELICA_ANT_NAME					"felica_ant"
 #define FELICA_ANT_DATA_LEN				1
-
-/* function prototype */
-static void felica_ant_init(void);
-static void felica_ant_exit(void);
-static int felica_ant_open(struct inode *inode, struct file *file);
-static int felica_ant_close(struct inode *inode, struct file *file);
-static ssize_t felica_ant_read(struct file *file, char __user *buf,\
-				size_t len, loff_t *ppos);
-static ssize_t felica_ant_write(struct file *file, const char __user *data,\
-				size_t len, loff_t *ppos);
-
-
-
 
 
 #endif /* _FELICA_H */

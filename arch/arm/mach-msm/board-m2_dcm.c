@@ -2073,7 +2073,7 @@ static struct i2c_board_info opt_i2c_borad_info[] = {
 #endif
 };
 
-static void gp2a_led_onoff(int);
+static int gp2a_led_onoff(int);
 
 #if defined(CONFIG_OPTICAL_GP2A)
 static struct opt_gp2a_platform_data opt_gp2a_data = {
@@ -2101,7 +2101,7 @@ static struct platform_device opt_gp2a = {
 		.platform_data  = &opt_gp2a_data,
 	},
 };
-
+#endif
 #endif
 #ifdef CONFIG_MPU_SENSORS_MPU6050B1_411
 	struct mpu_platform_data mpu6050_data = {
@@ -2517,14 +2517,14 @@ static void cm36651_power_on(int onoff)
 #endif
 
 #if defined(CONFIG_OPTICAL_GP2A) || defined(CONFIG_OPTICAL_GP2AP020A00F)
-static void gp2a_led_onoff(int onoff)
+static int gp2a_led_onoff(int onoff)
 {
 	static struct regulator *reg_8921_leda;
 	static int prev_on;
 	int rc;
 
 	if (onoff == prev_on)
-		return;
+		return 0;
 
 	if (!reg_8921_leda) {
 		reg_8921_leda = regulator_get(NULL, "8921_l16");
@@ -2540,7 +2540,7 @@ static void gp2a_led_onoff(int onoff)
 		if (rc) {
 			pr_err("'%s' regulator enable failed, rc=%d\n",
 				"reg_8921_leda", rc);
-			return;
+			return 0;
 		}
 		pr_debug("%s(on): success\n", __func__);
 	} else {
@@ -2548,11 +2548,12 @@ static void gp2a_led_onoff(int onoff)
 		if (rc) {
 			pr_err("'%s' regulator disable failed, rc=%d\n",
 				"reg_8921_leda", rc);
-			return;
+			return 0;
 		}
 		pr_debug("%s(off): success\n", __func__);
 	}
 	prev_on = onoff;
+	return 0;
 }
 #endif
 
@@ -4048,23 +4049,10 @@ static void mxt_init_hw_liquid(void)
 				__func__, GPIO_MXT_TS_LDO_EN);
 		goto err_ldo_gpio_req;
 	}
-#if !defined(CONFIG_WIRELESS_CHARGING)
-	rc = gpio_request(GPIO_MXT_TS_RESET, "mxt_reset_gpio");
-	if (rc) {
-		pr_err("%s: unable to request mxt_reset gpio [%d]\n",
-				__func__, GPIO_MXT_TS_RESET);
-		goto err_ldo_gpio_set_dir;
-	}
-
-	rc = gpio_direction_output(GPIO_MXT_TS_RESET, 1);
-	if (rc) {
-		pr_err("%s: unable to set_direction for mxt_reset gpio [%d]\n",
-				__func__, GPIO_MXT_TS_RESET);
-		goto err_reset_gpio_req;
-	}
-#endif
 	return;
 
+//err_ldo_gpio_set_dir:
+	gpio_set_value(GPIO_MXT_TS_LDO_EN, 0);
 err_ldo_gpio_req:
 	gpio_free(GPIO_MXT_TS_LDO_EN);
 err_irq_gpio_req:
@@ -5188,7 +5176,7 @@ static void __init gpio_rev_init(void)
 		gpio_keys_platform_data.nbuttons = ARRAY_SIZE(gpio_keys_button);
 	}
 #if defined(CONFIG_SENSORS_CM36651)
-	if (system_rev >= BOARD_REV02) {
+	if (system_rev >= BOARD_REV02)
 		cm36651_pdata.irq = gpio_rev(ALS_INT);
 #endif
 #if defined(CONFIG_OPTICAL_GP2A) || defined(CONFIG_OPTICAL_GP2AP020A00F) \
@@ -5201,12 +5189,10 @@ static void __init gpio_rev_init(void)
 		opt_gp2a_data.ps_status = gpio_rev(ALS_INT);
 	}
 #elif defined(CONFIG_OPTICAL_GP2AP020A00F)
-	if (system_rev >= BOARD_REV02) {
+	if (system_rev >= BOARD_REV02)
 		opt_gp2a_data.p_out = gpio_rev(ALS_INT);
 #endif
 #endif
-	msm8960_a2220_configs[0].gpio = gpio_rev(A2220_SDA);
-	msm8960_a2220_configs[1].gpio = gpio_rev(A2220_SCL);
 #ifdef CONFIG_VIBETONZ
 	if (system_rev >= BOARD_REV01) {
 		msm_8960_vibrator_pdata.vib_en_gpio = PMIC_GPIO_VIB_ON;
@@ -5289,7 +5275,7 @@ static struct pm_gpio wcd9310_power_en = {
 	.function	= PM_GPIO_FUNC_NORMAL,
 };
 
-static void codec_power_en_gpio_init()
+static void codec_power_en_gpio_init(void)
 {
 	int ret;
 
@@ -5317,7 +5303,7 @@ void main_mic_bias_init(void)
 		pr_err("%s: ldo bias gpio %d request"
 				"failed\n", __func__,
 				gpio_rev(GPIO_MAIN_MIC_BIAS));
-		return ret;
+		return;
 	}
 	gpio_direction_output(gpio_rev(GPIO_MAIN_MIC_BIAS), 0);
 }

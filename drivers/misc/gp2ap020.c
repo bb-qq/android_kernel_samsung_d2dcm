@@ -38,6 +38,7 @@
 #include <linux/regulator/consumer.h>
 #include <linux/gpio.h>
 #include <linux/i2c.h>
+#include <linux/module.h>
 
 /* for debugging */
 #undef DEBUG

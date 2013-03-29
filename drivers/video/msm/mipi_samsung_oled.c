@@ -70,7 +70,7 @@ static struct dsi_cmd_desc samsung_manufacture_id3_cmd = {
 static uint32 mipi_samsung_manufacture_id(struct msm_fb_data_type *mfd)
 {
 	struct dsi_buf *rp, *tp;
-#if 1// CONFIG_FB_MSM_MIPI_SAMSUNG_OLED_VIDEO_WVGA_PT
+#if (defined(CONFIG_FB_MSM_MIPI_SAMSUNG_OLED_VIDEO_WVGA_PT) || defined(CONFIG_MACH_K2_KDI))
 	char *cmd_lp;
 #else
 	struct dsi_cmd_desc *cmd;
@@ -96,7 +96,7 @@ static uint32 mipi_samsung_manufacture_id(struct msm_fb_data_type *mfd)
 	mipi_dsi_buf_init(rp);
 	mipi_dsi_buf_init(tp);
 
-#if 1// CONFIG_FB_MSM_MIPI_SAMSUNG_OLED_VIDEO_WVGA_PT
+#if (defined(CONFIG_FB_MSM_MIPI_SAMSUNG_OLED_VIDEO_WVGA_PT) || defined(CONFIG_MACH_K2_KDI))
 	cmd_lp = &samsung_manufacture_id2_cmd;
 	mipi_dsi_cmds_rx_lp(mfd, tp, rp, cmd_lp, 1);
 #else
