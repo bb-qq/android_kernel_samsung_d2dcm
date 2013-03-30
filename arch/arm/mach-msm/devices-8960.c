@@ -77,6 +77,9 @@
 #define MSM_GSBI12_PHYS		0x12480000
 
 #define MSM_UART2DM_PHYS	(MSM_GSBI2_PHYS + 0x40000)
+#ifdef CONFIG_FELICA
+#define MSM_UART4DM_PHYS	(MSM_GSBI4_PHYS + 0x40000)
+#endif /* CONFIG_FELICA */
 #define MSM_UART5DM_PHYS	(MSM_GSBI5_PHYS + 0x40000)
 #define MSM_UART6DM_PHYS	(MSM_GSBI6_PHYS + 0x40000)
 #define MSM_UART8DM_PHYS	(MSM_GSBI8_PHYS + 0x40000)
@@ -276,6 +279,35 @@ struct platform_device msm8960_device_uart_gsbi2 = {
 	.num_resources	= ARRAY_SIZE(resources_uart_gsbi2),
 	.resource	= resources_uart_gsbi2,
 };
+#ifdef CONFIG_FELICA
+static struct resource resources_uart_gsbi4[] = {
+	{
+		.start	= GSBI4_UARTDM_IRQ,
+		.end	= GSBI4_UARTDM_IRQ,
+		.flags	= IORESOURCE_IRQ,
+	},
+	{
+		.start	= MSM_UART4DM_PHYS,
+		.end	= MSM_UART4DM_PHYS + PAGE_SIZE - 1,
+		.name	= "uartdm_resource",
+		.flags	= IORESOURCE_MEM,
+	},
+	{
+		.start	= MSM_GSBI4_PHYS,
+		.end	= MSM_GSBI4_PHYS + PAGE_SIZE - 1,
+		.name	= "gsbi_resource",
+		.flags	= IORESOURCE_MEM,
+	},
+};
+
+struct platform_device msm8960_device_uart_gsbi4 = {
+	.name	= "msm_serial_hsl",
+	.id	= 1,
+	.num_resources	= ARRAY_SIZE(resources_uart_gsbi4),
+	.resource	= resources_uart_gsbi4,
+};
+
+#endif /* CONFIG_FELICA */
 /* GSBI 6 used into UARTDM Mode */
 static struct resource msm_uart_dm6_resources[] = {
 	{
