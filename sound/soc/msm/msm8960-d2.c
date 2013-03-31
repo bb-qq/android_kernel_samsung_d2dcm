@@ -377,6 +377,7 @@ static int msm8960_enable_codec_ext_clk(struct snd_soc_codec *codec, int enable,
 			codec_clk = clk_get(NULL, "i2s_spkr_osr_clk");
 			if (codec_clk) {
 				clk_set_rate(codec_clk, TABLA_EXT_CLK_RATE);
+				clk_prepare_enable(codec_clk);
 				clk_enable(codec_clk);
 				tabla_mclk_enable(codec, 1, dapm);
 			} else {
@@ -1124,7 +1125,7 @@ static int msm8960_i2s_audrx_init(struct snd_soc_pcm_runtime *rtd)
 
 	return 0;
 }
-#if 0
+
 static int msm8960_audrx_init(struct snd_soc_pcm_runtime *rtd)
 {
 	int err;
@@ -1231,6 +1232,7 @@ static int msm8960_audrx_init(struct snd_soc_pcm_runtime *rtd)
 
 	return 0;
 }
+#if 0
 static struct snd_soc_dsp_link lpa_fe_media = {
 	.playback = true,
 	.trigger = {
@@ -1297,7 +1299,7 @@ static int msm8960_i2s_tx_be_hw_params_fixup(struct snd_soc_pcm_runtime *rtd,
 
 	return 0;
 }
-#if 0
+
 static int msm8960_slim_0_rx_be_hw_params_fixup(struct snd_soc_pcm_runtime *rtd,
 			struct snd_pcm_hw_params *params)
 {
@@ -1329,7 +1331,7 @@ static int msm8960_slim_0_tx_be_hw_params_fixup(struct snd_soc_pcm_runtime *rtd,
 
 	return 0;
 }
-#endif
+
 static int msm8960_be_hw_params_fixup(struct snd_soc_pcm_runtime *rtd,
 			struct snd_pcm_hw_params *params)
 {
@@ -1706,6 +1708,13 @@ static int msm8960_i2s_startup(struct snd_pcm_substream *substream)
 	return ret;
 }
 
+static int msm8960_startup(struct snd_pcm_substream *substream)
+{
+	pr_info("%s(): substream = %s  stream = %d\n", __func__,
+		 substream->name, substream->stream);
+	return 0;
+}
+
 static int msm8960_auxpcm_startup(struct snd_pcm_substream *substream)
 {
 	int ret = 0;
@@ -1730,15 +1739,6 @@ static void msm8960_auxpcm_shutdown(struct snd_pcm_substream *substream)
 		msm8960_aux_pcm_free_gpios();
 }
 
-/* Not used */
-#if 0
-static int msm8960_startup(struct snd_pcm_substream *substream)
-{
-	pr_info("%s(): substream = %s  stream = %d\n", __func__,
-		 substream->name, substream->stream);
-	return 0;
-}
-
 static void msm8960_shutdown(struct snd_pcm_substream *substream)
 {
 	pr_debug("%s(): substream = %s  stream = %d\n", __func__,
@@ -1749,14 +1749,12 @@ static struct snd_soc_ops msm8960_be_ops = {
 	.startup = msm8960_startup,
 	.shutdown = msm8960_shutdown,
 };
-#endif
+
 static struct snd_soc_ops msm8960_i2s_be_ops = {
 	.startup = msm8960_i2s_startup,
 	.shutdown = msm8960_i2s_shutdown,
 	.hw_params = msm8660_i2s_hw_params,
 };
-
-/* Not Used */
 
 static struct snd_soc_ops msm8960_auxpcm_be_ops = {
 	.startup = msm8960_auxpcm_startup,
@@ -1764,6 +1762,7 @@ static struct snd_soc_ops msm8960_auxpcm_be_ops = {
 };
 
 static struct snd_soc_dai_link *msm8960_dai_list;
+
 static struct snd_soc_dai_link msm8960_i2s_be_dai[] = {
 	{
 		.name = LPASS_BE_PRI_I2S_RX,
@@ -1791,7 +1790,7 @@ static struct snd_soc_dai_link msm8960_i2s_be_dai[] = {
 		.ops = &msm8960_i2s_be_ops,
 	},
 };
-#if 0
+
 static struct snd_soc_dai_link msm8960_slimbus_be_dai[] = {
 	{
 		.name = LPASS_BE_SLIMBUS_0_RX,
@@ -1819,7 +1818,7 @@ static struct snd_soc_dai_link msm8960_slimbus_be_dai[] = {
 		.ops = &msm8960_be_ops,
 	},
 };
-#endif
+
 /* Digital audio interface glue - connects codec <---> CPU */
 static struct snd_soc_dai_link msm8960_dai[] = {
 	/* FrontEnd DAI Links */
@@ -2273,23 +2272,21 @@ static int __init msm8960_audio_init(void)
 	int ret;
 	msm8960_dai_list = kzalloc(sizeof(msm8960_dai) +
 			2 * sizeof(struct snd_soc_dai_link), GFP_KERNEL);
-/*
-	if (tabla_get_intf_type() == TABLA_INTERFACE_TYPE_SLIMBUS) {
+	if (wcd9xxx_get_intf_type() == WCD9XXX_INTERFACE_TYPE_SLIMBUS) {
 		memcpy(msm8960_dai_list, msm8960_dai, sizeof(msm8960_dai));
 		memcpy(&msm8960_dai_list[ARRAY_SIZE(msm8960_dai)],
 			msm8960_slimbus_be_dai, sizeof(msm8960_slimbus_be_dai));
 		snd_soc_card_msm8960.dai_link = msm8960_dai_list;
 		snd_soc_card_msm8960.num_links = ARRAY_SIZE(msm8960_dai) +
 					ARRAY_SIZE(msm8960_slimbus_be_dai);
-	} else if (tabla_get_intf_type() == TABLA_INTERFACE_TYPE_I2C) {
-*/
+	} else if (wcd9xxx_get_intf_type() == WCD9XXX_INTERFACE_TYPE_I2C) {
 		memcpy(msm8960_dai_list, msm8960_dai, sizeof(msm8960_dai));
 		memcpy(&msm8960_dai_list[ARRAY_SIZE(msm8960_dai)],
 				msm8960_i2s_be_dai, sizeof(msm8960_i2s_be_dai));
 		snd_soc_card_msm8960.dai_link = msm8960_dai_list;
 		snd_soc_card_msm8960.num_links = ARRAY_SIZE(msm8960_dai) +
 					ARRAY_SIZE(msm8960_i2s_be_dai);
-//	}
+	}
 
 	printk(KERN_INFO "%s: start", __func__);
 	mbhc_cfg.calibration = def_tabla_mbhc_cal();
