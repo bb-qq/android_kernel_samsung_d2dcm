@@ -1,3 +1,4 @@
+ccflags-y := -DDEBUG
 # MSM CPU/CODEC DAI Support
 snd-soc-msm-dai-objs := msm-dai.o
 obj-$(CONFIG_SND_MSM_DAI_SOC) += snd-soc-msm-dai.o

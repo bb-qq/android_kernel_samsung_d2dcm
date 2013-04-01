@@ -377,7 +377,7 @@ static int msm8960_enable_codec_ext_clk(struct snd_soc_codec *codec, int enable,
 			codec_clk = clk_get(NULL, "i2s_spkr_osr_clk");
 			if (codec_clk) {
 				clk_set_rate(codec_clk, TABLA_EXT_CLK_RATE);
-				clk_prepare_enable(codec_clk);
+				clk_prepare_enable(codec_clk); // for test
 				clk_enable(codec_clk);
 				tabla_mclk_enable(codec, 1, dapm);
 			} else {

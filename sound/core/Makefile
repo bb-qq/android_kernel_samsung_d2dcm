@@ -2,7 +2,7 @@
 # Makefile for ALSA
 # Copyright (c) 1999,2001 by Jaroslav Kysela <perex@perex.cz>
 #
-
+ccflags-y := -DDEBUG
 snd-y     := sound.o init.o memory.o info.o control.o misc.o device.o
 snd-$(CONFIG_ISA_DMA_API) += isadma.o
 snd-$(CONFIG_SND_OSSEMUL) += sound_oss.o info_oss.o
