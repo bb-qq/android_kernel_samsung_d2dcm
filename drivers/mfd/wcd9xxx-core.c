@@ -1097,8 +1097,8 @@ static int wcd9xxx_slim_get_laddr(struct slim_device *sb,
 			break;
 		/* Give SLIMBUS time to report present and be ready. */
 		usleep_range(1000, 1000);
-		//pr_debug_ratelimited("%s: retyring get logical addr\n",
-		//		     __func__);
+		pr_debug_ratelimited("%s: retyring get logical addr\n",
+				     __func__);
 	} while time_before(jiffies, timeout);
 
 	return ret;
